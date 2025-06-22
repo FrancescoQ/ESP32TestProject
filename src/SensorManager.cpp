@@ -1,17 +1,26 @@
 #include "SensorManager.h"
-#include <Arduino.h>
 
-void SensorManager::updateSensorData()
+void SensorManager::addSensor(SensorType type, int pin)
 {
-  unsigned long millisNow = millis();
-  if (millisNow - lastMillis > 1000)
-  { // Update every second
-    lastMillis = millisNow;
-    latestFakeData = random(0, 100); // Simulate sensor data
+  sensors.emplace_back(type, pin);
+}
+
+void SensorManager::updateAll()
+{
+  for (auto &s : sensors)
+  {
+    s.update();
   }
 }
 
-int SensorManager::getLatestData() const
+int SensorManager::getSensorValue(size_t idx) const
 {
-  return latestFakeData;
+  if (idx < sensors.size())
+    return sensors[idx].value;
+  return -1;
+}
+
+size_t SensorManager::count() const
+{
+  return sensors.size();
 }

@@ -8,11 +8,11 @@
 
 // @TODO:  explore the magic websocket world, es. https://randomnerdtutorials.com/esp32-websocket-server-arduino/
 
-SensorManager sensor;
+#define UPDATE_FREQUENCY 1000
 
+SensorManager sensorManager;
 WebServer server(80);
 int lastMillis = 0;
-int latestFakeData = 0;
 
 void resetWiFi()
 {
@@ -66,13 +66,27 @@ void setup()
     server.send(302, "text/plain", "");
   });
 
-  // Endpoint to get the latest sensor data
-  server.on("/sensor", HTTP_GET, []()
-  {
-    int value = sensor.getLatestData();
-    String json = "{\"value\":" + String(value) + "}";
-    server.send(200, "application/json", json);
-  });
+  // Endpoint to get the latest sensor data, MOVED IN THE NOTFOUND HANDLER.
+  // server.on("/sensor/movement", HTTP_GET, []()
+  // {
+  //   int value = sensorManager.getSensorValue(0);
+  //   String json = "{\"value\":" + String(value) + "}";
+  //   server.send(200, "application/json", json);
+  // });
+
+  // server.on("/sensor/light", HTTP_GET, []()
+  // {
+  //   int value = sensorManager.getSensorValue(1);
+  //   String json = "{\"value\":" + String(value) + "}";
+  //   server.send(200, "application/json", json);
+  // });
+
+  // server.on("/sensor/fake", HTTP_GET, []()
+  // {
+  //   int value = sensorManager.getSensorValue(2);
+  //     String json = "{\"value\":" + String(value) + "}";
+  //     server.send(200, "application/json", json);
+  // });
 
   server.on("/heap", HTTP_GET, []()
   {
@@ -94,27 +108,47 @@ void setup()
   // Handle the not found case.
   server.onNotFound([]()
   {
+    String uri = server.uri(); // e.g., "/sensor/1"
+    if (uri.startsWith("/sensor/")) {
+      String idxStr = uri.substring(strlen("/sensor/")); // get the part after "/sensor/"
+      int idx = idxStr.toInt();
+      int value = sensorManager.getSensorValue(idx);
+      if (value == -1)
+      {
+        server.send(404, "application/json", "{\"error\":\"Sensor not found\"}");
+        return;
+      }
+      String json = "{\"value\":" + String(value) + "}";
+      server.send(200, "application/json", json);
+      return;
+    }
+
     Serial.print("Page not found: ");
-    Serial.println(server.uri());
-    server.send(404, "text/plain", "Not found");
-  });
+    Serial.println(uri);
+    server.send(404, "text/plain", "Not found"); });
 
   // Start the server.
   server.begin();
+
+  // Start the OTA service.
   ElegantOTA.begin(&server);
   ElegantOTA.setAuth("francesco", "pwd");
+
+  sensorManager.addSensor(SensorType::Movement, 12);
+  sensorManager.addSensor(SensorType::Light, 34);
+  sensorManager.addSensor(SensorType::Fake, 0);
 }
 
 void loop()
 {
   server.handleClient();
-  sensor.updateSensorData();
 
-  // Fake sensor reading data.
+  // Update sensor readings.
   int millisNow = millis();
-  if (millisNow - lastMillis > 1000) // Update every 10 seconds
+  if (millisNow - lastMillis > 1000)
   {
-    //Serial.println(ESP.getFreeHeap());
+    sensorManager.updateAll();
+    lastMillis = millisNow;
   }
 
   // Handle OTA updates.

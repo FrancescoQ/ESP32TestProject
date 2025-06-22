@@ -15,27 +15,45 @@ async function getFreeHeap() {
 /**
  * Update sensor value field.
  */
-async function updateSensorValue() {
-  const response = await fetch("/sensor");
+async function updateMovementSensorValue() {
+  const response = await fetch("/sensor/0");
   let data = await response.json();
-  show(data);
+  const sensorValueElement = document.querySelector(".sensor-1 .sensor-data-value");
+  show(sensorValueElement, data);
 }
 
-function show(data) {
-  const sensorValueElement = document.querySelector(".sensor-1 .sensor-data-value");
-  if (sensorValueElement) {
-    sensorValueElement.textContent = data.value;
+async function updateLightSensorValue() {
+  const response = await fetch("/sensor/1");
+  let data = await response.json();
+  const sensorValueElement = document.querySelector(".sensor-2 .sensor-data-value");
+  show(sensorValueElement, data);
+}
+
+async function updateFakeSensorValue() {
+  const response = await fetch("/sensor/2");
+  let data = await response.json();
+  const sensorValueElement = document.querySelector(".sensor-3 .sensor-data-value");
+  show(sensorValueElement, data);
+}
+
+function show(element, data) {
+  if (element) {
+    element.textContent = data.value;
   } else {
-    console.error("Element '.sensor-1 .sensor-data-value' not found.");
+    console.error("Sensor element not found.");
   }
 }
 
 // Initial call to update sensor value
-updateSensorValue();
+updateMovementSensorValue();
+updateLightSensorValue();
+updateFakeSensorValue();
 
 // Set an interval to update the sensor value every 2 seconds
 dataTimer = setInterval(function () {
-  updateSensorValue();
+  updateMovementSensorValue();
+  updateLightSensorValue();
+  updateFakeSensorValue();
 }, 2000);
 
 // Update free heap memory every 3 seconds.

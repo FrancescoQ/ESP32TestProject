@@ -1,12 +1,15 @@
 #pragma once
+#include "Sensor.h"
+#include <vector>
 
 class SensorManager
 {
 public:
-  void updateSensorData();
-  int getLatestData() const;
+  void addSensor(SensorType type, int pin);
+  void updateAll();
+  int getSensorValue(size_t idx) const;
+  size_t count() const;
 
 private:
-  int latestFakeData = 0;
-  unsigned long lastMillis = 0;
+  std::vector<Sensor> sensors;
 };
