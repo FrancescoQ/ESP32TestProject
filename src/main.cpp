@@ -21,11 +21,11 @@
 #define OTA_AUTH_NAME "francesco"
 #define OTA_AUTH_PASSWORD "pwd"
 
-SensorManager sensorManager;
 WebServer server(80);
 WebServerRoutingManager routingManager(server, sensorManager);
+SensorManager sensorManager;
 
-int lastMillis = 0;
+int lastSensorUpdate = 0;
 
 void resetWiFi()
 {
@@ -70,6 +70,7 @@ void setup()
   ElegantOTA.begin(&server);
   ElegantOTA.setAuth(OTA_AUTH_NAME, OTA_AUTH_PASSWORD);
 
+  // Add sensors.
   sensorManager.addSensor(SensorType::Movement, 12, "Some movement sensor");
   sensorManager.addSensor(SensorType::Light, 34, "My light sensor");
   sensorManager.addSensor(SensorType::Fake, 0, "The fake sensor");
@@ -78,14 +79,15 @@ void setup()
 
 void loop()
 {
+  // Handle webserver requests.
   server.handleClient();
 
   // Update sensor readings.
   int millisNow = millis();
-  if (millisNow - lastMillis > 1000)
+  if (millisNow - lastSensorUpdate > 1000)
   {
     sensorManager.updateAll();
-    lastMillis = millisNow;
+    lastSensorUpdate = millisNow;
   }
 
   // Handle OTA updates.
