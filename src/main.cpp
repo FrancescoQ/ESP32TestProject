@@ -6,6 +6,8 @@
 #include <WiFiManager.h>
 #include <ElegantOTA.h>
 
+// @TODO:  explore the magic websocket world, es. https://randomnerdtutorials.com/esp32-websocket-server-arduino/
+
 WebServer server(80);
 int lastMillis = 0;
 int latestFakeData = 0;
@@ -58,13 +60,8 @@ void setup()
   // Handle "/".
   server.on("/", HTTP_GET, []()
   {
-    File file = LittleFS.open("/index.html", "r");
-    if (!file) {
-      server.send(404, "text/plain", "File not found");
-      return;
-    }
-    server.streamFile(file, "text/html");
-    file.close();
+    server.sendHeader("Location", "/start/index.html", true);
+    server.send(302, "text/plain", "");
   });
 
   // Endpoint to get the latest sensor data
@@ -78,11 +75,11 @@ void setup()
   // @todo how to handle this in the frontend?
   server.on("/resetwifi", HTTP_GET, []()
   {
-    resetWiFi();
+    // resetWiFi();
   });
 
   // Handle all other static files.
-  server.serveStatic("/", LittleFS, "/");
+  server.serveStatic("/start", LittleFS, "/");
 
   // Handle the not found case.
   server.onNotFound([]()
@@ -95,6 +92,7 @@ void setup()
   // Start the server.
   server.begin();
   ElegantOTA.begin(&server);
+  ElegantOTA.setAuth("francesco", "pwd");
 }
 
 void loop()
