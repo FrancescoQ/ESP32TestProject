@@ -5,6 +5,15 @@
   --dark: #333333;
 }
 
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
 body {
   margin: 0;
   font-family: Helvetica, sans-serif;
@@ -175,4 +184,24 @@ main.main-content section.items {
 
 .sensor-data-value {
   color: var(--blue);
+}
+
+/* footer */
+footer {
+  background-color: var(--white);
+  box-shadow: 1px -1px 4px 0 rgba(0, 0, 0, .1);
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding: 3px 20px;
+  font-size: small;
+}
+
+footer p {
+  margin: 0;
+  padding: 0;
 }

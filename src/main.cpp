@@ -1,12 +1,14 @@
 #include <Arduino.h>
-#include "FS.h"
 #include "LittleFS.h"
 #include <WiFi.h>
 #include <WebServer.h>
 #include <WiFiManager.h>
 #include <ElegantOTA.h>
+#include <SensorManager.h>
 
 // @TODO:  explore the magic websocket world, es. https://randomnerdtutorials.com/esp32-websocket-server-arduino/
+
+SensorManager sensor;
 
 WebServer server(80);
 int lastMillis = 0;
@@ -67,7 +69,15 @@ void setup()
   // Endpoint to get the latest sensor data
   server.on("/sensor", HTTP_GET, []()
   {
-    String json = "{\"value\":" + String(latestFakeData) + "}";
+    int value = sensor.getLatestData();
+    String json = "{\"value\":" + String(value) + "}";
+    server.send(200, "application/json", json);
+  });
+
+  server.on("/heap", HTTP_GET, []()
+  {
+    float freeHeapKB = ESP.getFreeHeap() / 1024.0; // Free memory in KB
+    String json = "{\"value\":" + String(freeHeapKB) + "}";
     server.send(200, "application/json", json);
   });
 
@@ -98,14 +108,13 @@ void setup()
 void loop()
 {
   server.handleClient();
+  sensor.updateSensorData();
 
   // Fake sensor reading data.
   int millisNow = millis();
   if (millisNow - lastMillis > 1000) // Update every 10 seconds
   {
-    lastMillis = millisNow;
-    latestFakeData = random(0, 100); // Simulate some sensor data
-    Serial.println("Latest sensor data: " + String(latestFakeData));
+    //Serial.println(ESP.getFreeHeap());
   }
 
   // Handle OTA updates.

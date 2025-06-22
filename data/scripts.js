@@ -1,11 +1,27 @@
+/**
+ * Update free memory field.
+ */
+async function getFreeHeap() {
+  const response = await fetch("/heap");
+  let data = await response.json();
+  const heapElement = document.querySelector(".heap");
+  if (heapElement) {
+    heapElement.textContent = data.value;
+  } else {
+    console.error("Heap element not found.");
+  }
+}
+
+/**
+ * Update sensor value field.
+ */
 async function updateSensorValue() {
   const response = await fetch("/sensor");
   let data = await response.json();
-  show(data)
+  show(data);
 }
 
 function show(data) {
-  console.log(data);
   const sensorValueElement = document.querySelector(".sensor-1 .sensor-data-value");
   if (sensorValueElement) {
     sensorValueElement.textContent = data.value;
@@ -14,13 +30,15 @@ function show(data) {
   }
 }
 
-timer = setInterval(function () {
-  console.log("Updating sensor value...");
+// Initial call to update sensor value
+updateSensorValue();
+
+// Set an interval to update the sensor value every 2 seconds
+dataTimer = setInterval(function () {
   updateSensorValue();
 }, 2000);
 
-
-document.querySelector(".sensor-1 .stop-monitoring").addEventListener("click", function() {
-  console.log("Sensor value clicked, stopping updates.");
-  clearInterval(timer);
-});
+// Update free heap memory every 3 seconds.
+heapTimer = setInterval(function () {
+  getFreeHeap();
+}, 5000);
