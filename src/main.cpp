@@ -10,20 +10,25 @@
 #include <Arduino.h>
 #include <LittleFS.h>
 #include <WiFi.h>
-#include <WebServer.h>
 #include <WiFiManager.h>
+// #include <WebServer.h>
+#include <AsyncTCP.h>
+#include <ESPAsyncWebServer.h>
 #include <ElegantOTA.h>
 #include <SensorManager.h>
-#include <WebServerRoutingManager.h>
+#include <AsyncWebServerRoutingManager.h>
 
 #define UPDATE_FREQUENCY 1000
 
 #define OTA_AUTH_NAME "francesco"
 #define OTA_AUTH_PASSWORD "pwd"
 
-WebServer server(80);
-WebServerRoutingManager routingManager(server, sensorManager);
+// WebServer server(80);
+AsyncWebServer server(80);
+AsyncWebSocket ws("/ws");
 SensorManager sensorManager;
+AsyncWebServerRoutingManager routingManager(server, sensorManager);
+
 
 int lastSensorUpdate = 0;
 
@@ -79,8 +84,8 @@ void setup()
 
 void loop()
 {
-  // Handle webserver requests.
-  server.handleClient();
+  // Handle webserver requests. (only needed for WebServer not for ESPAsyncWebServer)
+  // server.handleClient();
 
   // Update sensor readings.
   int millisNow = millis();
