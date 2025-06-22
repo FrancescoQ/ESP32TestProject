@@ -16,8 +16,9 @@ struct Sensor
   SensorType type;
   int pin;
   int value;
+  String label;
 
-  Sensor(SensorType t, int p) : type(t), pin(p), value(0) {}
+  Sensor(SensorType t, int p, const String &l) : type(t), pin(p), label(l), value(0) {}
 
   void update()
   {

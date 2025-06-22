@@ -1,17 +1,17 @@
 #pragma once
 #include <WebServer.h>
-#include <ElegantOTA.h>
 #include "SensorManager.h"
 #include "LittleFS.h"
+#include <ArduinoJson.h>
 
-class WebServerManager
+class WebServerRoutingManager
 {
 public:
-  WebServerManager(WebServer &server, SensorManager &sensor);
+  WebServerRoutingManager(WebServer &server, SensorManager &sensors);
   void setup();
   void loop();
 
 private:
   WebServer &server;
-  SensorManager &sensor;
+  SensorManager &sensors;
 };
