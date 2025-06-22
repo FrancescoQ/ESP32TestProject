@@ -42,7 +42,7 @@ void AsyncWebServerRoutingManager::setup()
   // Serve all remaining static files, prepend them with /start to avoid
   // conflict with other routes not managed by the webserver
   // (like update of the OTA functionality)
-  server.serveStatic("/start", LittleFS, "/");
+  server.serveStatic("/start", LittleFS, "/").setDefaultFile("index.html");
 
   // On not found, try to dynamically recognize the requested path.
   server.onNotFound([this](AsyncWebServerRequest *request) {
