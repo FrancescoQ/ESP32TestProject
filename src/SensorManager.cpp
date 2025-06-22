@@ -1,4 +1,4 @@
-#include "SensorManager.h"
+#include <SensorManager.h>
 
 void SensorManager::addSensor(SensorType type, int pin, String label)
 {

@@ -1,5 +1,5 @@
 #pragma once
-#include "Sensor.h"
+#include <Sensor.h>
 #include <vector>
 
 class SensorManager

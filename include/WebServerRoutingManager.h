@@ -1,7 +1,7 @@
 #pragma once
 #include <WebServer.h>
-#include "SensorManager.h"
-#include "LittleFS.h"
+#include <SensorManager.h>
+#include <LittleFS.h>
 #include <ArduinoJson.h>
 
 class WebServerRoutingManager
