@@ -47,7 +47,6 @@ void AsyncWebServerRoutingManager::setup()
   // On not found, try to dynamically recognize the requested path.
   server.onNotFound([this](AsyncWebServerRequest *request) {
     String uri = request->url();
-    Serial.println(uri);
     // Sensors data.
     if (uri.startsWith("/sensor/")) {
         String idxStr = uri.substring(strlen("/sensor/"));
