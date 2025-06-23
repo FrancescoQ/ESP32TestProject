@@ -208,18 +208,18 @@ footer p {
 }
 
 /* loader */
-.lds-dual-ring,
-.lds-dual-ring:after {
+.loader,
+.loader:after {
   box-sizing: border-box;
 }
 
-.lds-dual-ring {
+.loader {
   display: inline-block;
   width: 15px;
   height: 15px;
 }
 
-.lds-dual-ring:after {
+.loader:after {
   content: " ";
   display: block;
   width: 15px;
@@ -228,10 +228,10 @@ footer p {
   border-radius: 50%;
   border: 2px solid currentColor;
   border-color: currentColor transparent currentColor transparent;
-  animation: lds-dual-ring 1.2s linear infinite;
+  animation: loader 1.2s linear infinite;
 }
 
-@keyframes lds-dual-ring {
+@keyframes loader {
   0% {
     transform: rotate(0deg);
   }

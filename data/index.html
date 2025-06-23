@@ -31,11 +31,19 @@
     </section>
 
     <section class="sensor-data">
+      <template id="sensor-template">
+        <div class="">
+          <h3></h3>
+          <p>Data: <span class="sensor-data-value" data-sensor-id="">
+              <span class="loader"></span>
+            </span></p>
+        </div>
+      </template>
     </section>
   </main>
   <footer class="footer">
     <p>My awesome ESP32 Configuration Page</p>
-    <p>Free memory: <span class="heap"><span class="lds-dual-ring"></span></span>KB / 320KB</p>
+    <p>Free memory: <span class="heap"><span class="loader"></span></span>KB / 320KB</p>
   </footer>
   <script src="scripts.js"></script>
 </body>

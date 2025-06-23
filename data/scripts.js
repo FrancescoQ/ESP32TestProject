@@ -1,79 +1,102 @@
-const baseUrl = "";
+(() => {
+  const baseUrl = "http://192.168.1.128";
 
-initSensors();
+  /**
+   * Init only after loaded.
+   */
+  document.addEventListener("DOMContentLoaded", () => {
+    init();
+  });
 
-
-async function initSensors() {
-  const response = await fetch(baseUrl + "/sensors");
-  let data = await response.json();
-  const sensorDataSection = document.querySelector("section.sensor-data");
-
-  if (data.sensors.length > 0) {
-    data.sensors.forEach(sensor => {
-      const sensorID = sensor.id;
-      const sensorLabel = sensor.label;
-
-      const sensorElementWrapper = document.createElement("div");
-      sensorElementWrapper.classList.add("sensor-" + sensorID);
-
-      const sensorElementLabel = document.createElement("h3");
-      sensorElementLabel.textContent = sensorLabel;
-
-      sensorElementWrapper.append(sensorElementLabel);
-
-      const sensorElementValue = document.createElement("p");
-      sensorElementValue.textContent = "Data: ";
-      const sensorElementValuePlaceholder = document.createElement("span");
-      sensorElementValuePlaceholder.classList.add("sensor-data-value");
-      sensorElementValuePlaceholder.dataset.sensorId = sensorID;
-      sensorElementValuePlaceholder.innerHTML = "<span class='lds-dual-ring'></span>";
-      sensorElementValue.append(sensorElementValuePlaceholder);
-      sensorElementWrapper.append(sensorElementValue);
-
-      sensorDataSection.append(sensorElementWrapper);
-
-      setInterval(function () {
-        updateSensor(sensorID);
-      }, 1000);
-    });
+  /**
+   * Init functions.
+   */
+  function init() {
+    initSensors();
+    setInterval(updateFreeHeap, 5000);
   }
-}
 
-/**
- * Update sensor value field.
- */
-async function updateSensor(id) {
-  const response = await fetch(baseUrl + "/sensor/" + id);
-  let data = await response.json();
-  const sensorValueElement = document.querySelector(".sensor-" + id + " .sensor-data-value");
-  show(sensorValueElement, data);
-}
+  /**
+   * Initialize the sensors.
+   */
+  async function initSensors() {
+    try {
+      // Fetch the data of all available sensors.
+      const response = await fetch(`${baseUrl}/sensors`);
+      const data = await response.json();
 
+      if (!data.sensors?.length) {
+        return
+      };
 
-function show(element, data) {
-  if (element) {
-    element.textContent = data.value;
-  } else {
-    console.error("Sensor element not found.");
+      const sensorDataSection = document.querySelector("section.sensor-data");
+      const template = document.getElementById("sensor-template");
+
+      // Build all the sensor elements.
+      data.sensors.forEach(sensor => {
+        const element = createSensorElement(sensor, template);
+        sensorDataSection.append(element);
+
+        // Update the sensor value regularly.
+        setInterval(() => updateSensor(sensor.id), 1000);
+      });
+
+    } catch (error) {
+      console.error("Failed to initialize sensors:", error);
+    }
   }
-}
 
+  /**
+   * Create a single sensor element.
+   */
+  function createSensorElement(sensor, template) {
+    const clone = template.content.cloneNode(true);
+    const wrapper = clone.querySelector("div");
+    wrapper.classList.add(`sensor-${sensor.id}`);
 
-/**
- * Update free memory field.
- */
-async function getFreeHeap() {
-  const response = await fetch(baseUrl + "/heap");
-  let data = await response.json();
-  const heapElement = document.querySelector(".heap");
-  if (heapElement) {
-    heapElement.textContent = data.value;
-  } else {
-    console.error("Heap element not found.");
+    wrapper.querySelector("h3").textContent = sensor.label;
+
+    const valueEl = wrapper.querySelector(".sensor-data-value");
+    valueEl.dataset.sensorId = sensor.id;
+
+    return wrapper;
   }
-}
 
-// Update free heap memory.
-heapTimer = setInterval(function () {
-  getFreeHeap();
-}, 5000);
+  /**
+   * Update a sensor value.
+   */
+  async function updateSensor(id) {
+    try {
+      const response = await fetch(`${baseUrl}/sensor/${id}`);
+      const data = await response.json();
+
+      const sensorValueEl = document.querySelector(`.sensor-${id} .sensor-data-value`);
+      if (sensorValueEl) {
+        sensorValueEl.textContent = data.value;
+      } else {
+        console.warn(`Sensor element for ID ${id} not found`);
+      }
+    } catch (error) {
+      console.error(`Failed to update sensor ${id}:`, error);
+    }
+  }
+
+  /**
+   * Update Free memory element.
+   */
+  async function updateFreeHeap() {
+    try {
+      const response = await fetch(`${baseUrl}/heap`);
+      const data = await response.json();
+
+      const heapEl = document.querySelector(".heap");
+      if (heapEl) {
+        heapEl.textContent = data.value;
+      } else {
+        console.warn("Heap element not found");
+      }
+    } catch (error) {
+      console.error("Failed to update heap value:", error);
+    }
+  }
+})();
