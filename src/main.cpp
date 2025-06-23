@@ -5,13 +5,13 @@
 //
 // NOTE: pio run --target buildfs to build the filesystem image with the
 // data if we want to update it OTA.
+//
 // @TODO:  explore the magic websocket world, es. https://randomnerdtutorials.com/esp32-websocket-server-arduino/
 
 #include <Arduino.h>
 #include <LittleFS.h>
 #include <WiFi.h>
 #include <WiFiManager.h>
-// #include <WebServer.h>
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 #include <ElegantOTA.h>
@@ -84,9 +84,6 @@ void setup()
 
 void loop()
 {
-  // Handle webserver requests. (only needed for WebServer not for ESPAsyncWebServer)
-  // server.handleClient();
-
   // Update sensor readings.
   int millisNow = millis();
   if (millisNow - lastSensorUpdate > 1000)
