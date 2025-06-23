@@ -1,5 +1,5 @@
 (() => {
-  const baseUrl = "http://192.168.1.128";
+  const baseUrl = "";
 
   /**
    * Init only after loaded.
