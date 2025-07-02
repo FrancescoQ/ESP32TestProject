@@ -76,10 +76,11 @@ void setup()
   ElegantOTA.setAuth(OTA_AUTH_NAME, OTA_AUTH_PASSWORD);
 
   // Add sensors.
-  sensorManager.addSensor(SensorType::Movement, 12, "Some movement sensor");
-  sensorManager.addSensor(SensorType::Light, 34, "My light sensor");
-  sensorManager.addSensor(SensorType::Fake, 0, "The fake sensor");
-  sensorManager.addSensor(SensorType::Light, 18, "My second light sensor");
+  sensorManager.addSensor(SensorType::Movement, 12, "A faje movement sensor");
+  sensorManager.addSensor(SensorType::Light, 34, "My fake light sensor");
+  sensorManager.addSensor(SensorType::Fake, 0, "The generic fake sensor");
+  sensorManager.addSensor(SensorType::Light, 18, "My second (fakek) light sensor");
+  sensorManager.addSensor(SensorType::Touch, 4, "A Touch pin, REAL!");
 }
 
 void loop()

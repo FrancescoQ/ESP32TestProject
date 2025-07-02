@@ -44,6 +44,13 @@ public:
   String getSensorLabel(size_t idx) const;
 
   /**
+   * @brief Returns the sensor type.
+   * @param idx the index in the vector of sensors.
+   * @return the sensor type.
+   */
+  String getSensorType(size_t idx) const;
+
+  /**
    * @brief Returns the number of added sensors.
    * @return the number of available sensors.
    */

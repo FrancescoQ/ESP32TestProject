@@ -1,5 +1,8 @@
 :root {
   --blue: #1e90ff;
+  --green: #88cd5c;
+  --yellow: #ecca2f;
+  --red: #da0e0eb4;
   --white: #ffffff;
   --light: #f4f4f4;
   --dark: #333333;
@@ -177,13 +180,53 @@ main.main-content section.items {
   margin-bottom: 20px;
 }
 
-.sensor-data {
+.sensors {
   display: flex;
   justify-content: space-around;
 }
 
-.sensor-data-value {
+.value {
   color: var(--blue);
+}
+
+.sensor {
+  transition: background-color 500ms linear;
+}
+
+.sensor.active {
+  background: var(--green);
+  color: var(--light);
+}
+
+.sensor.active .value {
+  color: var(--light);
+}
+
+.sensor.low {
+  background: var(--green);
+  color: var(--light);
+}
+
+.sensor.low .value {
+  color: var(--light);
+}
+
+.sensor.medium {
+  background: var(--yellow);
+  color: var(--dark);
+}
+
+.sensor.medium .value {
+  color: var(--dark);
+}
+
+.sensor.high {
+  background: var(--red);
+  color: var(--light);
+}
+
+.sensor.high .value {
+  color: var(--light);
 }
 
 /* footer */

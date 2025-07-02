@@ -14,7 +14,8 @@ enum class SensorType
 {
   Movement,
   Light,
-  Fake
+  Touch,
+  Fake,
 };
 
 /**
@@ -66,6 +67,9 @@ struct Sensor
     case SensorType::Light:
       // value = analogRead(pin);
       value = random(0, 1024); // Fake light
+      break;
+    case SensorType::Touch:
+      value = touchRead(pin) < 60 ? 1 : 0;
       break;
     case SensorType::Fake:
       value = random(0, 100);

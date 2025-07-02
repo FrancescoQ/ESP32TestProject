@@ -33,8 +33,10 @@ void WebServerRoutingManager::setup()
     for (size_t i = 0; i < sensors.count(); i++)
     {
       String label = sensors.getSensorLabel(i);
+      String type = sensors.getSensorType(i);
       jsonDoc["sensors"][i]["id"] = i;
       jsonDoc["sensors"][i]["label"] = label;
+      jsonDoc["sensors"][i]["type"] = type;
     }
 
     serializeJson(jsonDoc, jsonString);

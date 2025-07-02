@@ -1,4 +1,5 @@
 #include <AsyncWebServerRoutingManager.h>
+#include <Sensor.h>
 
 AsyncWebServerRoutingManager::AsyncWebServerRoutingManager(AsyncWebServer &server, SensorManager &sensors)
     : server(server), sensors(sensors) {}
@@ -22,6 +23,17 @@ void AsyncWebServerRoutingManager::setup()
     request->send(200, "application/json", json);
   });
 
+  server.on("/setThreshold", HTTP_POST, [](AsyncWebServerRequest *request)
+  {
+    if (request->hasParam("value", true)) {
+        int newVal = request->getParam("value", true)->value().toInt();
+        //touchThreshold = newVal;
+        AsyncWebServerResponse *response = request->beginResponse(302, "text/plain", "");
+        response->addHeader("Location", "/start/index.html", true);
+        request->send(response);
+    }
+  });
+
   server.on("/sensors", HTTP_GET, [this](AsyncWebServerRequest *request) {
     JsonDocument jsonDoc;
     String jsonString;
@@ -31,8 +43,15 @@ void AsyncWebServerRoutingManager::setup()
     for (size_t i = 0; i < sensors.count(); i++)
     {
       String label = sensors.getSensorLabel(i);
+      String type = sensors.getSensorType(i);
+      Serial.println(type);
+
       jsonDoc["sensors"][i]["id"] = i;
       jsonDoc["sensors"][i]["label"] = label;
+      jsonDoc["sensors"][i]["type"] = type;
+      if (type == "touch") {
+        //jsonDoc["sensors"][i]["threshold"] = touchThreshold;
+      }
     }
 
     serializeJson(jsonDoc, jsonString);
@@ -49,16 +68,26 @@ void AsyncWebServerRoutingManager::setup()
     String uri = request->url();
     // Sensors data.
     if (uri.startsWith("/sensor/")) {
-        String idxStr = uri.substring(strlen("/sensor/"));
-        int idx = idxStr.toInt();
-        int value = sensors.getSensorValue(idx);
-        if (value == -1) {
-          request->send(404, "application/json", "{\"error\":\"Sensor not found\"}");
-          return;
-        }
-        String json = "{\"value\":" + String(value) + "}";
-        request->send(200, "application/json", json);
+      JsonDocument jsonDoc;
+      String jsonString;
+
+      String idxStr = uri.substring(strlen("/sensor/"));
+      int idx = idxStr.toInt();
+      int value = sensors.getSensorValue(idx);
+      if (value == -1) {
+        request->send(404, "application/json", "{\"error\":\"Sensor not found\"}");
         return;
+      }
+
+      jsonDoc["value"] = String(value);
+      if (sensors.getSensorType(idx) == "touch") {
+        //jsonDoc["threshold"] = touchThreshold;
+      }
+
+      serializeJson(jsonDoc, jsonString);
+      request->send(200, "application/json", jsonString);
+
+      return;
     }
     request->send(404, "text/plain", "Not found");
   });

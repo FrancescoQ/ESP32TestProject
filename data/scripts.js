@@ -1,5 +1,5 @@
 (() => {
-  const baseUrl = "";
+  const baseUrl = "http://192.168.1.128";
 
   /**
    * Init only after loaded.
@@ -29,7 +29,7 @@
         return
       };
 
-      const sensorDataSection = document.querySelector("section.sensor-data");
+      const sensorDataSection = document.querySelector("section.sensors");
       const template = document.getElementById("sensor-template");
 
       // Build all the sensor elements.
@@ -51,12 +51,13 @@
    */
   function createSensorElement(sensor, template) {
     const clone = template.content.cloneNode(true);
-    const wrapper = clone.querySelector("div");
+    const wrapper = clone.querySelector(".sensor");
     wrapper.classList.add(`sensor-${sensor.id}`);
+    wrapper.dataset.type = sensor.type;
 
     wrapper.querySelector("h3").textContent = sensor.label;
 
-    const valueEl = wrapper.querySelector(".sensor-data-value");
+    const valueEl = wrapper.querySelector(".value");
     valueEl.dataset.sensorId = sensor.id;
 
     return wrapper;
@@ -69,10 +70,42 @@
     try {
       const response = await fetch(`${baseUrl}/sensor/${id}`);
       const data = await response.json();
-
-      const sensorValueEl = document.querySelector(`.sensor-${id} .sensor-data-value`);
+      const sensorWrapper = document.querySelector(`.sensor-${id}`);
+      const type = sensorWrapper.dataset.type;
+      const sensorValueEl = sensorWrapper.querySelector('.value');
       if (sensorValueEl) {
         sensorValueEl.textContent = data.value;
+
+        // Custom things for types
+        if (type === 'touch') {
+          console.log(data.value);
+          if (data.value == 1) {
+            sensorWrapper.classList.add('active');
+          }
+          else {
+            sensorWrapper.classList.remove('active');
+          }
+
+          // wrapper.dataset.threshold = data.threshold;
+        }
+        // else if (type === 'light') {
+        //   if (data.value < 400) {
+        //     sensorWrapper.classList.add('low');
+        //     sensorWrapper.classList.remove('medium');
+        //     sensorWrapper.classList.remove('high');
+        //   }
+        //   else if (data.value >= 400 && data.value < 800) {
+        //     sensorWrapper.classList.remove('low');
+        //     sensorWrapper.classList.add('medium');
+        //     sensorWrapper.classList.remove('high');
+        //   }
+        //   else {
+        //     sensorWrapper.classList.remove('low');
+        //     sensorWrapper.classList.remove('medium');
+        //     sensorWrapper.classList.add('high');
+        //   }
+        // }
+
       } else {
         console.warn(`Sensor element for ID ${id} not found`);
       }
